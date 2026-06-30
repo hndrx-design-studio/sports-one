@@ -114,10 +114,10 @@
 
       clearTransitions();
       setStyle(lineTop, {
-        transform: "translateX(45px) translateY(8px) rotate(-45deg)",
+        transform: "translateX(45px) translateY(6px) rotate(-45deg)",
       });
       setStyle(lineBot, {
-        transform: "translateX(45px) translateY(-8px) rotate(45deg)",
+        transform: "translateX(45px) translateY(-6px) rotate(45deg)",
       });
       setStyle(lineMid, { transform: "translateX(45px)" });
 
@@ -125,11 +125,11 @@
       var tbTransition = "transform 0.5s " + EASING["in-out-quart"];
       setStyle(lineTop, {
         transition: tbTransition,
-        transform: "translateX(0px) translateY(8px) rotate(-45deg)",
+        transform: "translateX(0px) translateY(6px) rotate(-45deg)",
       });
       setStyle(lineBot, {
         transition: tbTransition,
-        transform: "translateX(0px) translateY(-8px) rotate(45deg)",
+        transform: "translateX(0px) translateY(-6px) rotate(45deg)",
       });
 
       await wait(500);
