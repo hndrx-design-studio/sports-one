@@ -1,4 +1,5 @@
-(function () {
+
+  (function () {
   var MQ = window.matchMedia("(max-width: 767px)");
 
   var teardown = null; // holds a function to remove listeners and reset state
@@ -114,10 +115,10 @@
 
       clearTransitions();
       setStyle(lineTop, {
-        transform: "translateX(50px) translateY(6px) rotate(-50deg)",
+        transform: "translateX(50px) translateY(7px) rotate(-45deg)",
       });
       setStyle(lineBot, {
-        transform: "translateX(50px) translateY(-6px) rotate(50deg)",
+        transform: "translateX(50px) translateY(-7px) rotate(45deg)",
       });
       setStyle(lineMid, { transform: "translateX(50px)" });
 
@@ -125,11 +126,11 @@
       var tbTransition = "transform 0.5s " + EASING["in-out-quart"];
       setStyle(lineTop, {
         transition: tbTransition,
-        transform: "translateX(0px) translateY(6px) rotate(-50deg)",
+        transform: "translateX(0px) translateY(7px) rotate(-45deg)",
       });
       setStyle(lineBot, {
         transition: tbTransition,
-        transform: "translateX(0px) translateY(-6px) rotate(50deg)",
+        transform: "translateX(0px) translateY(-7px) rotate(45deg)",
       });
 
       await wait(500);
@@ -147,11 +148,11 @@
       var shortMove = "transform 0.2s " + EASING["in-out-quart"];
       setStyle(lineBot, {
         transition: shortMove,
-        transform: "translateX(50px) translateY(-6px) rotate(50deg)",
+        transform: "translateX(50px) translateY(-7px) rotate(45deg)",
       });
       setStyle(lineTop, {
         transition: shortMove,
-        transform: "translateX(50px) translateY(6px) rotate(-50deg)",
+        transform: "translateX(50px) translateY(7px) rotate(-45deg)",
       });
 
       await wait(200);
