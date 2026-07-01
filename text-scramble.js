@@ -1,12 +1,11 @@
-// Register plugin
+<script>
+  // Register plugin
 gsap.registerPlugin(ScrollTrigger);
 
 // Utility: generate a binary scramble string matching length of target
 function makeBinaryScramble(len) {
-  // Keep whitespace the same to avoid layout shifts
   const out = [];
   for (let i = 0; i < len; i++) {
-    // Placeholder for letter-like chars vs. whitespace
     out.push(Math.random() < 0.5 ? "0" : "1");
   }
   return out.join("");
@@ -16,44 +15,53 @@ function scrambleFrame(fromArr, toArr, progress) {
   // Reveal left-to-right based on progress
   const revealCount = Math.floor(toArr.length * progress);
   const result = new Array(toArr.length);
-
   for (let i = 0; i < toArr.length; i++) {
     const targetChar = toArr[i];
-
-    // Preserve whitespace and punctuation immediately (optional: or reveal with index)
     const isWhitespace = /\s/.test(targetChar);
     const isPunct = /[.,;:!?'"()\-\u2013\u2014]/.test(targetChar);
-
     if (i < revealCount) {
       result[i] = targetChar;
     } else if (isWhitespace || isPunct) {
-      // Keep these stable to avoid jitter
       result[i] = targetChar;
     } else {
-      // Keep scrambling as binary
       result[i] = Math.random() < 0.5 ? "0" : "1";
     }
   }
-
   return result.join("");
 }
 
+// Walk the element and collect only its text nodes,
+// leaving every wrapping tag (h2, strong, span, etc.) untouched
+function getTextNodes(el) {
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+  const nodes = [];
+  let n;
+  while ((n = walker.nextNode())) {
+    if (n.nodeValue.trim().length > 0) nodes.push(n);
+  }
+  return nodes;
+}
+
 function initTextScramble() {
-  const nodes = document.querySelectorAll('[hndrx-gsap="text-scramble"]');
+  const els = document.querySelectorAll('[hndrx-gsap="text-scramble"]');
 
-  nodes.forEach((el) => {
-    const original = el.textContent || "";
-    const toArr = Array.from(original);
+  els.forEach((el) => {
+    const textNodes = getTextNodes(el);
+    if (!textNodes.length) return;
 
-    // Seed with binary mask that keeps whitespace/punct stable
-    const initial = toArr
-      .map((ch) => {
-        if (/\s/.test(ch) || /[.,;:!?'"()\-\u2013\u2014]/.test(ch)) return ch;
-        return Math.random() < 0.5 ? "0" : "1";
-      })
-      .join("");
+    const originals = textNodes.map((n) => n.nodeValue);
 
-    el.textContent = initial;
+    // Seed each text node with a binary mask that keeps whitespace/punct stable
+    const initials = originals.map((str) =>
+      Array.from(str)
+        .map((ch) => {
+          if (/\s/.test(ch) || /[.,;:!?'"()\-\u2013\u2014]/.test(ch)) return ch;
+          return Math.random() < 0.5 ? "0" : "1";
+        })
+        .join("")
+    );
+
+    textNodes.forEach((n, i) => (n.nodeValue = initials[i]));
 
     // GSAP timeline per element with ScrollTrigger
     const tl = gsap.timeline({
@@ -65,18 +73,22 @@ function initTextScramble() {
       defaults: { duration: 2, ease: "none" },
     });
 
-    // Animate a proxy object’s progress 0->1 and render each tick
+    // Animate a proxy object's progress 0->1 and render each tick
     const proxy = { p: 0 };
-
     tl.to(proxy, {
       p: 1,
       onUpdate: () => {
-        const next = scrambleFrame(initial.split(""), toArr, proxy.p);
-        el.textContent = next;
+        textNodes.forEach((n, i) => {
+          n.nodeValue = scrambleFrame(
+            initials[i].split(""),
+            Array.from(originals[i]),
+            proxy.p
+          );
+        });
       },
       onComplete: () => {
-        // Ensure final text is exact
-        el.textContent = original;
+        // Ensure final text is exact, restore each node individually
+        textNodes.forEach((n, i) => (n.nodeValue = originals[i]));
       },
     });
   });
@@ -88,3 +100,4 @@ if (document.readyState === "loading") {
 } else {
   initTextScramble();
 }
+</script>
