@@ -95,18 +95,18 @@
 
       setStyle(lineTop, {
         transition: "transform 0.2s " + EASING["in-out-quart"],
-        transform: "translateX(45px)",
+        transform: "translateX(50px)",
       });
       setTimeout(function () {
         setStyle(lineMid, {
           transition: "transform 0.2s " + EASING["in-out-quart"],
-          transform: "translateX(45px)",
+          transform: "translateX(50px)",
         });
       }, 100);
       setTimeout(function () {
         setStyle(lineBot, {
           transition: "transform 0.2s " + EASING["in-out-quart"],
-          transform: "translateX(45px)",
+          transform: "translateX(50px)",
         });
       }, 200);
 
@@ -114,22 +114,22 @@
 
       clearTransitions();
       setStyle(lineTop, {
-        transform: "translateX(45px) translateY(6px) rotate(-45deg)",
+        transform: "translateX(50px) translateY(6px) rotate(-50deg)",
       });
       setStyle(lineBot, {
-        transform: "translateX(45px) translateY(-6px) rotate(45deg)",
+        transform: "translateX(50px) translateY(-6px) rotate(50deg)",
       });
-      setStyle(lineMid, { transform: "translateX(45px)" });
+      setStyle(lineMid, { transform: "translateX(50px)" });
 
       void lineTop.offsetHeight;
       var tbTransition = "transform 0.5s " + EASING["in-out-quart"];
       setStyle(lineTop, {
         transition: tbTransition,
-        transform: "translateX(0px) translateY(6px) rotate(-45deg)",
+        transform: "translateX(0px) translateY(6px) rotate(-50deg)",
       });
       setStyle(lineBot, {
         transition: tbTransition,
-        transform: "translateX(0px) translateY(-6px) rotate(45deg)",
+        transform: "translateX(0px) translateY(-6px) rotate(50deg)",
       });
 
       await wait(500);
@@ -147,18 +147,18 @@
       var shortMove = "transform 0.2s " + EASING["in-out-quart"];
       setStyle(lineBot, {
         transition: shortMove,
-        transform: "translateX(45px) translateY(-8px) rotate(45deg)",
+        transform: "translateX(50px) translateY(-6px) rotate(50deg)",
       });
       setStyle(lineTop, {
         transition: shortMove,
-        transform: "translateX(45px) translateY(8px) rotate(-45deg)",
+        transform: "translateX(50px) translateY(6px) rotate(-50deg)",
       });
 
       await wait(200);
 
       clearTransitions();
-      setStyle(lineTop, { transform: "translateX(45px)" });
-      setStyle(lineBot, { transform: "translateX(45px)" });
+      setStyle(lineTop, { transform: "translateX(50px)" });
+      setStyle(lineBot, { transform: "translateX(50px)" });
 
       setStyle(lineTop, {
         transition: "transform 0.2s " + EASING["in-out-quart"],
