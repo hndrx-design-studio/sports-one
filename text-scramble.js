@@ -1,4 +1,4 @@
-<script>
+
   // Register plugin
 gsap.registerPlugin(ScrollTrigger);
 
@@ -100,4 +100,4 @@ if (document.readyState === "loading") {
 } else {
   initTextScramble();
 }
-</script>
+
