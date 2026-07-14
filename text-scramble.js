@@ -1,15 +1,6 @@
 // Register plugin
 gsap.registerPlugin(ScrollTrigger);
 
-// Utility: generate a binary scramble string matching length of target
-function makeBinaryScramble(len) {
-  const out = [];
-  for (let i = 0; i < len; i++) {
-    out.push(Math.random() < 0.5 ? "0" : "1");
-  }
-  return out.join("");
-}
-
 function scrambleFrame(fromArr, toArr, progress) {
   // Reveal left-to-right based on progress
   const revealCount = Math.floor(toArr.length * progress);
@@ -41,73 +32,101 @@ function getTextNodes(el) {
   return nodes;
 }
 
-// Core runner shared by both variants
-function runScramble(el, { duration, useScrollTrigger }) {
-  const textNodes = getTextNodes(el);
-  if (!textNodes.length) return;
+function initTextScramble() {
+  const els = document.querySelectorAll('[hndrx-gsap="text-scramble"]');
+  els.forEach((el) => {
+    const textNodes = getTextNodes(el);
+    if (!textNodes.length) return;
+    const originals = textNodes.map((n) => n.nodeValue);
+    const initials = originals.map((str) =>
+      Array.from(str)
+        .map((ch) => {
+          if (/\s/.test(ch) || /[.,;:!?'"()\-\u2013\u2014]/.test(ch)) return ch;
+          return Math.random() < 0.5 ? "0" : "1";
+        })
+        .join("")
+    );
+    textNodes.forEach((n, i) => (n.nodeValue = initials[i]));
 
-  const originals = textNodes.map((n) => n.nodeValue);
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: "top 80%",
+        once: true,
+      },
+      defaults: { duration: 1.8, ease: "none" },
+    });
 
-  // Seed each text node with a binary mask that keeps whitespace/punct stable
-  const initials = originals.map((str) =>
-    Array.from(str)
-      .map((ch) => {
-        if (/\s/.test(ch) || /[.,;:!?'"()\-\u2013\u2014]/.test(ch)) return ch;
-        return Math.random() < 0.5 ? "0" : "1";
-      })
-      .join("")
-  );
-  textNodes.forEach((n, i) => (n.nodeValue = initials[i]));
-
-  // GSAP timeline — attach ScrollTrigger only when requested
-  const tl = gsap.timeline({
-    ...(useScrollTrigger
-      ? {
-          scrollTrigger: {
-            trigger: el,
-            start: "top 80%", // when element enters viewport
-            once: true, // run only once
-          },
-        }
-      : {}),
-    defaults: { duration, ease: "none" },
-  });
-
-  // Animate a proxy object's progress 0->1 and render each tick
-  const proxy = { p: 0 };
-  tl.to(proxy, {
-    p: 1,
-    onUpdate: () => {
-      textNodes.forEach((n, i) => {
-        n.nodeValue = scrambleFrame(
-          initials[i].split(""),
-          Array.from(originals[i]),
-          proxy.p
-        );
-      });
-    },
-    onComplete: () => {
-      // Ensure final text is exact, restore each node individually
-      textNodes.forEach((n, i) => (n.nodeValue = originals[i]));
-    },
+    const proxy = { p: 0 };
+    tl.to(proxy, {
+      p: 1,
+      onUpdate: () => {
+        textNodes.forEach((n, i) => {
+          n.nodeValue = scrambleFrame(
+            initials[i].split(""),
+            Array.from(originals[i]),
+            proxy.p
+          );
+        });
+      },
+      onComplete: () => {
+        textNodes.forEach((n, i) => (n.nodeValue = originals[i]));
+      },
+    });
   });
 }
 
-function initTextScramble() {
-  // Standard scroll-triggered version
-  document
-    .querySelectorAll('[hndrx-gsap="text-scramble"]')
-    .forEach((el) => runScramble(el, { duration: 1.8, useScrollTrigger: true }));
+function initTextScrambleFast() {
+  const els = document.querySelectorAll('[hndrx-gsap="text-scramble-fast"]');
+  els.forEach((el) => {
+    const textNodes = getTextNodes(el);
+    if (!textNodes.length) return;
+    const originals = textNodes.map((n) => n.nodeValue);
+    const initials = originals.map((str) =>
+      Array.from(str)
+        .map((ch) => {
+          if (/\s/.test(ch) || /[.,;:!?'"()\-\u2013\u2014]/.test(ch)) return ch;
+          return Math.random() < 0.5 ? "0" : "1";
+        })
+        .join("")
+    );
+    textNodes.forEach((n, i) => (n.nodeValue = initials[i]));
 
-  // Fast loader version — fires immediately, no scroll needed
-  document
-    .querySelectorAll('[hndrx-gsap="text-scramble-fast"]')
-    .forEach((el) => runScramble(el, { duration: 1, useScrollTrigger: false }));
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: "top 80%",
+        once: true,
+      },
+      defaults: { duration: 1.2, ease: "none" },
+    });
+
+    const proxy = { p: 0 };
+    tl.to(proxy, {
+      p: 1,
+      onUpdate: () => {
+        textNodes.forEach((n, i) => {
+          n.nodeValue = scrambleFrame(
+            initials[i].split(""),
+            Array.from(originals[i]),
+            proxy.p
+          );
+        });
+      },
+      onComplete: () => {
+        textNodes.forEach((n, i) => (n.nodeValue = originals[i]));
+      },
+    });
+  });
 }
 
 // Init on DOM ready
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initTextScramble);
+  document.addEventListener("DOMContentLoaded", () => {
+    initTextScramble();
+    initTextScrambleFast();
+  });
 } else {
   initTextScramble();
+  initTextScrambleFast();
 }
